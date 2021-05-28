@@ -2,58 +2,33 @@ package com.eugene.androidpopularlibraries
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.PersistableBundle
+import android.view.View
 import com.eugene.androidpopularlibraries.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MyView {
 
     private var vb: ActivityMainBinding? = null
-    val counters = mutableListOf(0, 0, 0)
+    val presenter = Presenter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         vb = ActivityMainBinding.inflate(layoutInflater)
         setContentView(vb?.root)
 
-        vb?.buttonCounter1?.setOnClickListener {
-            vb?.buttonCounter1?.text = (++counters[0]).toString()
+        val listener = View.OnClickListener {
+            presenter.counterClick(it.id)
         }
 
-        vb?.buttonCounter2?.setOnClickListener {
-            vb?.buttonCounter2?.text = (++counters[1]).toString()
+        vb?.buttonCounter1?.setOnClickListener(listener)
+        vb?.buttonCounter2?.setOnClickListener(listener)
+        vb?.buttonCounter3?.setOnClickListener(listener)
+    }
+
+    override fun setButtonText(index: Int, text: String) {
+        when(index) {
+            0 -> vb?.buttonCounter1?.text = text
+            1 -> vb?.buttonCounter2?.text = text
+            2 -> vb?.buttonCounter3?.text = text
         }
-
-        vb?.buttonCounter3?.setOnClickListener {
-            vb?.buttonCounter3?.text = (++counters[2]).toString()
-        }
-
-        initViews()
-    }
-
-    fun initViews() {
-        vb?.buttonCounter1?.text = counters[0].toString()
-        vb?.buttonCounter2?.text = counters[1].toString()
-        vb?.buttonCounter3?.text = counters[2].toString()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putIntArray("counters", counters.toIntArray())
-    }
-
-    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
-        super.onSaveInstanceState(outState, outPersistentState)
-        outState.putIntArray("counters", counters.toIntArray())
-
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        val countersArray = savedInstanceState.getIntArray("counters")
-        countersArray?.toList()?.let {
-            counters.clear()
-            counters.addAll(it)
-        }
-        initViews()
     }
 }
