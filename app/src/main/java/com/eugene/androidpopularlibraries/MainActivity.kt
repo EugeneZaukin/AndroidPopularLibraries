@@ -2,33 +2,41 @@ package com.eugene.androidpopularlibraries
 
 import android.os.Bundle
 import com.eugene.androidpopularlibraries.databinding.ActivityMainBinding
+import com.eugene.androidpopularlibraries.presenter.AndroidScreens
+import com.eugene.androidpopularlibraries.presenter.MainPresenter
+import com.eugene.androidpopularlibraries.view.MainView
+import com.github.terrakok.cicerone.androidx.AppNavigator
 import moxy.MvpAppCompatActivity
 import moxy.ktx.moxyPresenter
 
-class MainActivity : MvpAppCompatActivity(), MyView {
+class MainActivity : MvpAppCompatActivity(), MainView {
 
+    val navigator = AppNavigator(this, R.id.container)
     private var vb: ActivityMainBinding? = null
-    private val presenter by moxyPresenter { Presenter(Model()) }
+    private val presenter by moxyPresenter { MainPresenter(App.instance.router, AndroidScreens()) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         vb = ActivityMainBinding.inflate(layoutInflater)
         setContentView(vb?.root)
-
-        vb?.buttonCounter1?.setOnClickListener { presenter.counterOneClick() }
-        vb?.buttonCounter2?.setOnClickListener { presenter.counterTwoClick() }
-        vb?.buttonCounter3?.setOnClickListener { presenter.counterThreeClick() }
     }
 
-    override fun setButtonOneText(text: String) {
-        vb?.buttonCounter1?.text = text
+    override fun onResumeFragments() {
+        super.onResumeFragments()
+        App.instance.navigatorHolder.setNavigator(navigator)
     }
 
-    override fun setButtonTwoText(text: String) {
-        vb?.buttonCounter2?.text = text
+    override fun onPause() {
+        super.onPause()
+        App.instance.navigatorHolder.removeNavigator()
     }
 
-    override fun setButtonThreeText(text: String) {
-        vb?.buttonCounter3?.text = text
+    override fun onBackPressed() {
+        supportFragmentManager.fragments.forEach {
+            if (it is BackButtonListener && it.backPressed()) {
+                return
+            }
+        }
+        presenter.backClicked()
     }
 }
