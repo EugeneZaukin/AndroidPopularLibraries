@@ -1,18 +1,21 @@
 package com.eugene.androidpopularlibraries
 
-class Presenter(val view: MyView) {
-    val model = Model()
+import moxy.MvpPresenter
 
-    fun counterClick(buttonNumber: ButtonIdCounter) {
-        when (buttonNumber) {
-            ButtonIdCounter.ONE -> setButtonText(0)
-            ButtonIdCounter.TWO -> setButtonText(1)
-            ButtonIdCounter.THREE -> setButtonText(2)
-        }
+class Presenter(val model: Model): MvpPresenter<MyView>() {
+
+    fun counterOneClick() {
+        val nextValue = model.next(0)
+        viewState.setButtonOneText(nextValue.toString())
     }
 
-    fun setButtonText(index: Int) {
-        val nextValue = model.next(index)
-        view.setButtonText(index, "$nextValue")
+    fun counterTwoClick() {
+        val nextValue = model.next(1)
+        viewState.setButtonTwoText(nextValue.toString())
+    }
+
+    fun counterThreeClick() {
+        val nextValue = model.next(2)
+        viewState.setButtonThreeText(nextValue.toString())
     }
 }
