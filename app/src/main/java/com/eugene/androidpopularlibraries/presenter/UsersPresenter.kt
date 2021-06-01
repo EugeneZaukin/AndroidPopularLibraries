@@ -7,19 +7,22 @@ import com.eugene.androidpopularlibraries.view.UsersView
 import com.github.terrakok.cicerone.Router
 import moxy.MvpPresenter
 
-class UsersPresenter(val usersRepo: GithubUsersRepo, val router: Router) :
-    MvpPresenter<UsersView>() {
+class UsersPresenter(
+    private val usersRepo: GithubUsersRepo,
+    private val router: Router,
+    private val screens: IScreens
+) : MvpPresenter<UsersView>() {
 
     class UsersListPresenter : IUserListPresenter {
         val users = mutableListOf<GithubUser>()
         override var itemClickListener: ((UserItemView) -> Unit)? = null
 
-        override fun getCount() = users.size
-
         override fun bindView(view: UserItemView) {
             val user = users[view.pos]
             view.setLogin(user.login)
         }
+
+        override fun getCount() = users.size
     }
 
     val usersListPresenter = UsersListPresenter()
@@ -28,9 +31,9 @@ class UsersPresenter(val usersRepo: GithubUsersRepo, val router: Router) :
         super.onFirstViewAttach()
         viewState.init()
         loadData()
-
         usersListPresenter.itemClickListener = { itemView ->
-            //TODO: переход на экран пользователя
+            val user = usersListPresenter.users[itemView.pos]
+            router.navigateTo(screens.user(user))
         }
     }
 

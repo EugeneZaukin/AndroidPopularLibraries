@@ -1,4 +1,4 @@
-package com.eugene.androidpopularlibraries
+package com.eugene.androidpopularlibraries.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
