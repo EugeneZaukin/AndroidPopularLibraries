@@ -1,31 +1,42 @@
 package com.eugene.androidpopularlibraries
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import com.eugene.androidpopularlibraries.databinding.ActivityMainBinding
+import com.eugene.androidpopularlibraries.presenter.BackButtonListener
+import com.eugene.androidpopularlibraries.presenter.MainPresenter
+import com.eugene.androidpopularlibraries.view.MainView
+import com.github.terrakok.cicerone.androidx.AppNavigator
+import moxy.MvpAppCompatActivity
+import moxy.ktx.moxyPresenter
 
-class MainActivity : AppCompatActivity(), MyView {
+class MainActivity : MvpAppCompatActivity(), MainView {
 
+    val navigator = AppNavigator(this, R.id.container)
     private var vb: ActivityMainBinding? = null
-    val presenter = Presenter(this)
+    private val presenter by moxyPresenter { MainPresenter(App.instance.router, AndroidScreens()) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         vb = ActivityMainBinding.inflate(layoutInflater)
         setContentView(vb?.root)
-
-        with(vb) {
-            this?.buttonCounter1?.setOnClickListener { presenter.counterClick(ButtonIdCounter.ONE) }
-            this?.buttonCounter2?.setOnClickListener { presenter.counterClick(ButtonIdCounter.TWO) }
-            this?.buttonCounter3?.setOnClickListener { presenter.counterClick(ButtonIdCounter.THREE) }
-        }
     }
 
-    override fun setButtonText(index: Int, text: String) {
-        when (index) {
-            0 -> vb?.buttonCounter1?.text = text
-            1 -> vb?.buttonCounter2?.text = text
-            2 -> vb?.buttonCounter3?.text = text
+    override fun onResumeFragments() {
+        super.onResumeFragments()
+        App.instance.navigatorHolder.setNavigator(navigator)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        App.instance.navigatorHolder.removeNavigator()
+    }
+
+    override fun onBackPressed() {
+        supportFragmentManager.fragments.forEach {
+            if (it is BackButtonListener && it.backPressed()) {
+                return
+            }
         }
+        presenter.backClicked()
     }
 }

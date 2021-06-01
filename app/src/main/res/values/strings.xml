@@ -6,4 +6,6 @@
     <string name="text_view_text1">Счетчик 1</string>
     <string name="text_view_text2">Счетчик 2</string>
     <string name="text_view_text3">Счетчик 3</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
