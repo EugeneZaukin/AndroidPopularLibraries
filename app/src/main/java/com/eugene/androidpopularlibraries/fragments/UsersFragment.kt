@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.eugene.androidpopularlibraries.AndroidScreens
 import com.eugene.androidpopularlibraries.App
 import com.eugene.androidpopularlibraries.adapter.UsersRVAdapter
 import com.eugene.androidpopularlibraries.databinding.FragmentUsersBinding
@@ -12,6 +11,7 @@ import com.eugene.androidpopularlibraries.model.GithubUsersRepo
 import com.eugene.androidpopularlibraries.presenter.BackButtonListener
 import com.eugene.androidpopularlibraries.presenter.UsersPresenter
 import com.eugene.androidpopularlibraries.view.UsersView
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 
@@ -21,7 +21,7 @@ class UsersFragment : MvpAppCompatFragment(), UsersView, BackButtonListener {
     }
 
     val presenter: UsersPresenter by moxyPresenter {
-        UsersPresenter(GithubUsersRepo(), App.instance.router, AndroidScreens())
+        UsersPresenter(GithubUsersRepo(), App.instance.router, AndroidSchedulers.mainThread())
     }
     var adapter: UsersRVAdapter? = null
     private var vb: FragmentUsersBinding? = null
