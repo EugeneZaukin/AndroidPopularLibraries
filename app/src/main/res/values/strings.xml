@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">AndroidPopularLibraries</string>
+    <string name="type_image">image/*</string>
+    <string name="select_image">Select Image</string>
+    <string name="find_image">Find Image</string>
+    <string name="save_image">Save Image</string>
 </resources>
