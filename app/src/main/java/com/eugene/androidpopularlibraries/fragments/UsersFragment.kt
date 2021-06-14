@@ -6,8 +6,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.eugene.androidpopularlibraries.App
 import com.eugene.androidpopularlibraries.adapter.UsersRVAdapter
+import com.eugene.androidpopularlibraries.api.ApiHolder
+import com.eugene.androidpopularlibraries.api.GlideImageLoader
 import com.eugene.androidpopularlibraries.databinding.FragmentUsersBinding
-import com.eugene.androidpopularlibraries.model.GithubUsersRepo
+import com.eugene.androidpopularlibraries.model.RetrofitGithubUsersRepo
 import com.eugene.androidpopularlibraries.presenter.BackButtonListener
 import com.eugene.androidpopularlibraries.presenter.UsersPresenter
 import com.eugene.androidpopularlibraries.view.UsersView
@@ -21,9 +23,13 @@ class UsersFragment : MvpAppCompatFragment(), UsersView, BackButtonListener {
     }
 
     val presenter: UsersPresenter by moxyPresenter {
-        UsersPresenter(GithubUsersRepo(), App.instance.router, AndroidSchedulers.mainThread())
+        UsersPresenter(
+            RetrofitGithubUsersRepo(ApiHolder.api),
+            App.instance.router,
+            AndroidSchedulers.mainThread()
+        )
     }
-    var adapter: UsersRVAdapter? = null
+    private var adapter: UsersRVAdapter? = null
     private var vb: FragmentUsersBinding? = null
 
     override fun onCreateView(
@@ -34,13 +40,14 @@ class UsersFragment : MvpAppCompatFragment(), UsersView, BackButtonListener {
     }.root
 
     override fun onDestroyView() {
-        super.onDestroyView()
         vb = null
+        adapter = null
+        super.onDestroyView()
     }
 
     override fun init() {
         vb?.rvUsers?.layoutManager = LinearLayoutManager(context)
-        adapter = UsersRVAdapter(presenter.usersListPresenter)
+        adapter = UsersRVAdapter(presenter.usersListPresenter, GlideImageLoader())
         vb?.rvUsers?.adapter = adapter
     }
 

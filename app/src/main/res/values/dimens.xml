@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="user_text_size">20sp</dimen>
+    <dimen name="tv_text_size_frag_repo">20sp</dimen>
+    <dimen name="margin_rv_item_repo">10dp</dimen>
+    <dimen name="ts_item_rv_repo">20sp</dimen>
+    <dimen name="margin_top_tv_login_text">20dp</dimen>
+    <dimen name="margin_start_tv_login_text">5dp</dimen>
+    <dimen name="text_size_login">20sp</dimen>
+</resources>
