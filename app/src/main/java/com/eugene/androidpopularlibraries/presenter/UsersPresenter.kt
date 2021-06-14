@@ -2,7 +2,7 @@ package com.eugene.androidpopularlibraries.presenter
 
 import com.eugene.androidpopularlibraries.AndroidScreens
 import com.eugene.androidpopularlibraries.model.GithubUser
-import com.eugene.androidpopularlibraries.model.GithubUsersRepo
+import com.eugene.androidpopularlibraries.model.IGithubUsersRepo
 import com.eugene.androidpopularlibraries.view.UserItemView
 import com.eugene.androidpopularlibraries.view.UsersView
 import com.github.terrakok.cicerone.Router
@@ -11,7 +11,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import moxy.MvpPresenter
 
 class UsersPresenter(
-    private val usersRepo: GithubUsersRepo,
+    private val usersRepo: IGithubUsersRepo,
     private val router: Router,
     private val uiSched: Scheduler
 ) : MvpPresenter<UsersView>() {
@@ -22,7 +22,8 @@ class UsersPresenter(
 
         override fun bindView(view: UserItemView) {
             val user = users[view.pos]
-            view.setLogin(user.login)
+            user.login?.let { view.setLogin(it) }
+            user.avatarUrl?.let { view.loadAvatar(it) }
         }
 
         override fun getCount() = users.size
@@ -37,7 +38,7 @@ class UsersPresenter(
         loadData()
         usersListPresenter.itemClickListener = { itemView ->
             val user = usersListPresenter.users[itemView.pos]
-            router.navigateTo(AndroidScreens.user(user))
+            router.navigateTo(AndroidScreens.UserScreen(user).getFragment())
         }
     }
 
@@ -59,7 +60,7 @@ class UsersPresenter(
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         disposable.dispose()
+        super.onDestroy()
     }
 }

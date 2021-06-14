@@ -2,13 +2,16 @@ package com.eugene.androidpopularlibraries.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import com.eugene.androidpopularlibraries.api.IImageLoader
 import com.eugene.androidpopularlibraries.databinding.RecyclerViewItemBinding
 import com.eugene.androidpopularlibraries.presenter.IUserListPresenter
 import com.eugene.androidpopularlibraries.view.UserItemView
 
-class UsersRVAdapter(val presenter: IUserListPresenter) :
-    RecyclerView.Adapter<UsersRVAdapter.ViewHolder>() {
+class UsersRVAdapter(
+    val presenter: IUserListPresenter,
+    val imageLoader: IImageLoader<ImageView>) : RecyclerView.Adapter<UsersRVAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         ViewHolder(
@@ -32,6 +35,10 @@ class UsersRVAdapter(val presenter: IUserListPresenter) :
 
         override fun setLogin(text: String) = with(vb) {
             tvLogin.text = text
+        }
+
+        override fun loadAvatar(url: String) {
+            imageLoader.loadIntro(url, vb.imageAvatar)
         }
     }
 }
