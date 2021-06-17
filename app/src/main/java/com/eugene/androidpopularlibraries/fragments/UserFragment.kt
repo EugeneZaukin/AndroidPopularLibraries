@@ -7,11 +7,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.eugene.androidpopularlibraries.App
 import com.eugene.androidpopularlibraries.adapter.RepositoriesRVAdapter
 import com.eugene.androidpopularlibraries.api.ApiHolder
+import com.eugene.androidpopularlibraries.cache.GithubReposCacheImpl
 import com.eugene.androidpopularlibraries.databinding.FragmentUserBinding
 import com.eugene.androidpopularlibraries.model.GithubUser
 import com.eugene.androidpopularlibraries.model.RetrofitGithubRepositoriesRepo
+import com.eugene.androidpopularlibraries.network.AndroidNetworkStatus
 import com.eugene.androidpopularlibraries.presenter.BackButtonListener
 import com.eugene.androidpopularlibraries.presenter.UserPresenter
+import com.eugene.androidpopularlibraries.room.Database
 import com.eugene.androidpopularlibraries.view.UserView
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import moxy.MvpAppCompatFragment
@@ -19,6 +22,9 @@ import moxy.ktx.moxyPresenter
 
 class UserFragment : MvpAppCompatFragment(), UserView, BackButtonListener {
 
+    private val database: Database by lazy {
+        Database.apply { create(requireContext()) }.getInstance()
+    }
     private var vb: FragmentUserBinding? = null
     private var adapter: RepositoriesRVAdapter? = null
     val presenter: UserPresenter by moxyPresenter {
@@ -26,7 +32,11 @@ class UserFragment : MvpAppCompatFragment(), UserView, BackButtonListener {
         UserPresenter(
             App.instance.router,
             user,
-            RetrofitGithubRepositoriesRepo(ApiHolder.api),
+            RetrofitGithubRepositoriesRepo(
+                ApiHolder.api,
+                AndroidNetworkStatus(requireContext()),
+                GithubReposCacheImpl(database)
+            ),
             AndroidSchedulers.mainThread()
         )
     }
