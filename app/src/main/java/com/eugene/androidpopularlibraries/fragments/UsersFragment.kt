@@ -8,10 +8,13 @@ import com.eugene.androidpopularlibraries.App
 import com.eugene.androidpopularlibraries.adapter.UsersRVAdapter
 import com.eugene.androidpopularlibraries.api.ApiHolder
 import com.eugene.androidpopularlibraries.api.GlideImageLoader
+import com.eugene.androidpopularlibraries.cache.GithubUsersCacheImpl
 import com.eugene.androidpopularlibraries.databinding.FragmentUsersBinding
 import com.eugene.androidpopularlibraries.model.RetrofitGithubUsersRepo
+import com.eugene.androidpopularlibraries.network.AndroidNetworkStatus
 import com.eugene.androidpopularlibraries.presenter.BackButtonListener
 import com.eugene.androidpopularlibraries.presenter.UsersPresenter
+import com.eugene.androidpopularlibraries.room.Database
 import com.eugene.androidpopularlibraries.view.UsersView
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import moxy.MvpAppCompatFragment
@@ -22,9 +25,16 @@ class UsersFragment : MvpAppCompatFragment(), UsersView, BackButtonListener {
         fun newInstance() = UsersFragment()
     }
 
+    val database: Database by lazy {
+        Database.apply { create(requireContext()) }.getInstance()
+    }
     val presenter: UsersPresenter by moxyPresenter {
         UsersPresenter(
-            RetrofitGithubUsersRepo(ApiHolder.api),
+            RetrofitGithubUsersRepo(
+                ApiHolder.api,
+                AndroidNetworkStatus(requireContext()),
+                GithubUsersCacheImpl(database)
+            ),
             App.instance.router,
             AndroidSchedulers.mainThread()
         )

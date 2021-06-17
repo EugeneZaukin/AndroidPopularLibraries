@@ -1,13 +1,27 @@
 package com.eugene.androidpopularlibraries.model
 
 import com.eugene.androidpopularlibraries.api.IDataSource
+import com.eugene.androidpopularlibraries.cache.GithubUsersCache
+import com.eugene.androidpopularlibraries.network.INetworkStatus
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.lang.RuntimeException
 
-class RetrofitGithubUsersRepo(val api: IDataSource): IGithubUsersRepo {
+class RetrofitGithubUsersRepo(
+    val api: IDataSource,
+    val networkStatus: INetworkStatus,
+    val githubUsersCache: GithubUsersCache
+): IGithubUsersRepo {
+
     override fun getUsers(): Single<List<GithubUser>> =
-        api.getUsers().subscribeOn(Schedulers.io()) ?: Single
-                                                       .error<List<GithubUser>>(RuntimeException("Users not load"))
-                                                       .subscribeOn(Schedulers.io())
+        networkStatus.isOnlineSingle()
+            .flatMap { isOnline ->
+                if (isOnline) {
+                    api.getUsers()
+                        .flatMap { users ->
+                            githubUsersCache.putUsers(users).toSingleDefault(users)
+                        }
+                } else {
+                    githubUsersCache.getUsers()
+                }
+            }.subscribeOn(Schedulers.io())
 }
