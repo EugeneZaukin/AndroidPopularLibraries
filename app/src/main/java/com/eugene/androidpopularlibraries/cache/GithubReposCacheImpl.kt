@@ -8,8 +8,9 @@ import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.lang.RuntimeException
+import javax.inject.Inject
 
-class GithubReposCacheImpl(private val db: Database): GithubRepositoriesCache {
+class GithubReposCacheImpl @Inject constructor(private val db: Database): GithubRepositoriesCache {
 
     override fun getUserRepos(user: GithubUser): Single<List<GitHubRepo>> =
         Single.fromCallable {

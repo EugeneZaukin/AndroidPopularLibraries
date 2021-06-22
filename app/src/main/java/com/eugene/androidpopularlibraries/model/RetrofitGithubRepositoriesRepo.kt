@@ -6,11 +6,12 @@ import com.eugene.androidpopularlibraries.network.INetworkStatus
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.lang.RuntimeException
+import javax.inject.Inject
 
-class RetrofitGithubRepositoriesRepo(
-    val api: IDataSource,
-    val networkStatus: INetworkStatus,
-    val githubReposCache: GithubRepositoriesCache
+class RetrofitGithubRepositoriesRepo @Inject constructor(
+    private val api: IDataSource,
+    private val networkStatus: INetworkStatus,
+    private val githubReposCache: GithubRepositoriesCache
 ): IGithubRepositoriesRepo {
 
     override fun getRepositories(user: GithubUser): Single<List<GitHubRepo>> =
